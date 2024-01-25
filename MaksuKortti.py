@@ -17,8 +17,7 @@ class MaksuKortti:
         else:
             print("Rahamäärän täytyy olla 0€ suurempi")
 
-    def veloita(self, hinta, maara):
-        kokonaishinta = hinta * maara
+    def veloita(self, kokonaishinta):
         if self.saldo >= kokonaishinta:
             self.saldo -= kokonaishinta
         else:

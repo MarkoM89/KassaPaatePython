@@ -52,10 +52,11 @@ while toiminto != 4:
                     for tuote in tuotteet:
                         if tuote.haeNimi() == tuoteNimi:
                             tuoteMaara = int(input("Paljonko laitetaan: "))
-                            ostaja.veloita(tuote.haeHinta(), tuoteMaara)
+                            #ostaja.veloita(tuote.haeHinta(), tuoteMaara)
                             ostetutTuotteet.append(tuoteNimi+ " " +str(tuoteMaara)+ "kpl")
                             loppusumma += (tuote.haeHinta()*tuoteMaara)
 
+                ostaja.veloita(loppusumma)
                 kuitit.append(kuitti(nimi, loppusumma))
 
                 for ostos in ostetutTuotteet:
