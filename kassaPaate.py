@@ -2,6 +2,9 @@ from MaksuKortti import *
 from Tuote import *
 from kuitti import *
 
+import mariadb
+import sys
+
 toiminto = int(1)
 maksukortit = []
 maksukortit.append(MaksuKortti("Mikko", 120.60))
@@ -15,6 +18,37 @@ tuotteet.append(Tuote("Omena", 0.95))
 kuitit = []
 ostetutTuotteet = []
 
+
+
+try:
+    conn = mariadb.connect(
+        user="root",
+        password="T13t0k4!?t4",
+        host="127.0.0.1",
+        port=3306,
+        database="kokeilutietokanta"
+
+    )
+except mariadb.Error as e:
+    print(f"Error connecting to MariaDB Platform: {e}")
+    sys.exit(1)
+
+# Get Cursor
+cur = conn.cursor()
+
+cur.execute("select * from pankki")
+
+
+for (tunniste, nimi, saldo) in cur:
+    print(f"tunniste: {tunniste}, nimi: {nimi}, saldo: {saldo}")
+
+
+print("\n\n\n\n\n")
+
+'''cur.execute(
+    "SELECT nimi,saldo FROM pankki WHERE tunniste=?", 
+    (some_name,))
+'''
 
 '''
 Päätoiminto 1: Osta tuote 
@@ -52,7 +86,6 @@ while toiminto != 4:
                     for tuote in tuotteet:
                         if tuote.haeNimi() == tuoteNimi:
                             tuoteMaara = int(input("Paljonko laitetaan: "))
-                            #ostaja.veloita(tuote.haeHinta(), tuoteMaara)
                             ostetutTuotteet.append(tuoteNimi+ " " +str(tuoteMaara)+ "kpl")
                             loppusumma += (tuote.haeHinta()*tuoteMaara)
 
