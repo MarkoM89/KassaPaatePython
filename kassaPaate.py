@@ -7,14 +7,7 @@ import sys
 
 toiminto = int(1)
 maksukortit = []
-maksukortit.append(MaksuKortti("Mikko", 120.60))
-maksukortit.append(MaksuKortti("Tapio", 200.00))
-maksukortit.append(MaksuKortti("Noora", 175.20))
-
 tuotteet = []
-tuotteet.append(Tuote("Tomaatti", 1.25))
-tuotteet.append(Tuote("Omena", 0.95))
-
 kuitit = []
 ostetutTuotteet = []
 
@@ -38,12 +31,21 @@ cur = conn.cursor()
 
 cur.execute("select * from pankki")
 
-
 for (tunniste, nimi, saldo) in cur:
     print(f"tunniste: {tunniste}, nimi: {nimi}, saldo: {saldo}")
+    maksukortit.append(MaksuKortti(nimi, float(saldo)))
 
 
-print("\n\n\n\n\n")
+print("\n\n\n")
+
+cur.execute("select * from tuote")
+
+for (tuotetunnste, tuoteNimi, yksikköhinta) in cur:
+    print(f"tuotetunnste: {tuotetunnste}, tuoteNimi: {tuoteNimi}, yksikköhinta: {yksikköhinta}")
+    tuotteet.append(Tuote(tuoteNimi, float(yksikköhinta)))
+
+
+print("\n\n\n")
 
 '''cur.execute(
     "SELECT nimi,saldo FROM pankki WHERE tunniste=?", 
