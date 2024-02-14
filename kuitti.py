@@ -13,7 +13,7 @@ class kuitti:
         for tuote in self.tuotteet:
             print(tuote)
 
-        print("Loppusumma:" +str(self.loppusumma)+ "€")
+        print("Loppusumma: " +str(self.loppusumma)+ "€")
 
     def lisaaOstos(self, ostos):
         self.tuotteet.append(ostos)
