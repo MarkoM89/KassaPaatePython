@@ -62,22 +62,24 @@ while toiminto != 2:
 
     if toiminto == 1:
         print("Päätoiminto 1: Ostotapahtuma")
+
+        tuoteNimi = " "
+        loppusumma = 0.0
+        
+        while tuoteNimi != "":
+            for tuote in ostetutTuotteet:
+                print(tuote)
+            tuoteNimi = input("Mitä tuotetta ostetaan? ")
+            for tuote in tuotteet:
+                if tuote.haeNimi() == tuoteNimi:
+                    tuoteMaara = int(input("Paljonko laitetaan: "))
+                    ostetutTuotteet.append(tuoteNimi+ " " +str(tuoteMaara)+ "kpl")
+                    loppusumma += (tuote.haeHinta()*tuoteMaara)
+
+
         nimi = input("Kuka ostaa? ")
         for ostaja in maksukortit:
             if ostaja.palautaNimi() == nimi:
-
-                tuoteNimi = " "
-                loppusumma = 0.0
-                while tuoteNimi != "":
-                    for tuote in tuotteet:
-                        tuote.tulostaTuote()
-                    tuoteNimi = input("Mitä tuotetta ostetaan? ")
-                    for tuote in tuotteet:
-                        if tuote.haeNimi() == tuoteNimi:
-                            tuoteMaara = int(input("Paljonko laitetaan: "))
-                            ostetutTuotteet.append(tuoteNimi+ " " +str(tuoteMaara)+ "kpl")
-                            loppusumma += (tuote.haeHinta()*tuoteMaara)
-
                 ostaja.veloita(loppusumma)
                 kuitit.append(kuitti(nimi, loppusumma))
 
@@ -85,8 +87,9 @@ while toiminto != 2:
                     kuitit[-1].lisaaOstos(ostos)
 
                 kuitit[-1].tulostaKuitti()
-                ostetutTuotteet.clear()
-                loppusumma = 0
+
+        ostetutTuotteet.clear()
+        loppusumma = 0
         
     elif toiminto == 2:
         print("Ohjelma sulkeutuu")
