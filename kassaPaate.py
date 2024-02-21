@@ -28,7 +28,7 @@ except mariadb.Error as e:
 
 # Get Cursor
 cur = conn.cursor()
-
+'''
 cur.execute("select * from pankki")
 
 for (tunniste, nimi, saldo) in cur:
@@ -46,7 +46,7 @@ for (tuotetunnste, tuoteNimi, yksikköhinta) in cur:
 
 
 print("\n\n\n")
-
+'''
 '''cur.execute(
     "SELECT nimi,saldo FROM pankki WHERE tunniste=?", 
     (some_name,))
@@ -63,23 +63,36 @@ while toiminto != 2:
     if toiminto == 1:
         print("Päätoiminto 1: Ostotapahtuma")
 
-        tuoteNimi = " "
+        syottoTuoteNimi = " "
         loppusumma = 0.0
         
-        while tuoteNimi != "":
+        while syottoTuoteNimi != "":
             for tuote in ostetutTuotteet:
                 print(tuote)
-            tuoteNimi = input("Mitä tuotetta ostetaan? ")
-            for tuote in tuotteet:
-                if tuote.haeNimi() == tuoteNimi:
+            
+            syottoTuoteNimi = input("Mitä tuotetta ostetaan? ")
+            cur.execute(
+            "SELECT tuotetunniste, tuotenimi, yksikköhinta FROM tuote WHERE tuotenimi=?", 
+            (syottoTuoteNimi,))
+
+            if cur.fetchone:
+                print("Tuotetta ei löydy valikoimasta")
+            
+            for (tuotetunniste, tuoteNimi, yksikköhinta) in cur:
+                if tuoteNimi == syottoTuoteNimi:
                     tuoteMaara = int(input("Paljonko laitetaan: "))
                     ostetutTuotteet.append(tuoteNimi+ " " +str(tuoteMaara)+ "kpl")
-                    loppusumma += (tuote.haeHinta()*tuoteMaara)
+                    loppusumma += (float(yksikköhinta)*tuoteMaara)
+                    print(loppusumma)
 
 
-        nimi = input("Kuka ostaa? ")
-        for ostaja in maksukortit:
-            if ostaja.palautaNimi() == nimi:
+        ostaja = input("Kuka ostaa? ")
+        cur.execute(
+        "SELECT tunniste, nimi, saldo FROM tuote WHERE nimi=?", 
+        (ostaja,))
+
+        for (tunniste, nimi, saldo) in cur:
+            if nimi == ostaja:
                 ostaja.veloita(loppusumma)
                 kuitit.append(kuitti(nimi, loppusumma))
 
