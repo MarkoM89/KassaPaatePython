@@ -26,31 +26,9 @@ except mariadb.Error as e:
     print(f"Error connecting to MariaDB Platform: {e}")
     sys.exit(1)
 
-# Get Cursor
+
 cur = conn.cursor()
 '''
-cur.execute("select * from pankki")
-
-for (tunniste, nimi, saldo) in cur:
-    print(f"tunniste: {tunniste}, nimi: {nimi}, saldo: {saldo}")
-    maksukortit.append(MaksuKortti(nimi, float(saldo)))
-
-
-print("\n\n\n")
-
-cur.execute("select * from tuote")
-
-for (tuotetunnste, tuoteNimi, yksikköhinta) in cur:
-    print(f"tuotetunnste: {tuotetunnste}, tuoteNimi: {tuoteNimi}, yksikköhinta: {yksikköhinta}")
-    tuotteet.append(Tuote(tuoteNimi, float(yksikköhinta)))
-
-
-print("\n\n\n")
-'''
-'''cur.execute(
-    "SELECT nimi,saldo FROM pankki WHERE tunniste=?", 
-    (some_name,))
-
 Päätoiminto 1: Osta tuote 
 
 Päätoiminto 2: Poistu ohjelmasta
@@ -66,40 +44,60 @@ while toiminto != 2:
         syottoTuoteNimi = " "
         loppusumma = 0.0
         
+        
         while syottoTuoteNimi != "":
             for tuote in ostetutTuotteet:
                 print(tuote)
+
+            tuoteLoydetty = False
             
             syottoTuoteNimi = input("Mitä tuotetta ostetaan? ")
             cur.execute(
             "SELECT tuotetunniste, tuotenimi, yksikköhinta FROM tuote WHERE tuotenimi=?", 
             (syottoTuoteNimi,))
 
-            if cur.fetchone:
-                print("Tuotetta ei löydy valikoimasta")
-            
+
             for (tuotetunniste, tuoteNimi, yksikköhinta) in cur:
                 if tuoteNimi == syottoTuoteNimi:
                     tuoteMaara = int(input("Paljonko laitetaan: "))
                     ostetutTuotteet.append(tuoteNimi+ " " +str(tuoteMaara)+ "kpl")
                     loppusumma += (float(yksikköhinta)*tuoteMaara)
                     print(loppusumma)
+                    tuoteLoydetty = True
+
+            if tuoteLoydetty == False and syottoTuoteNimi != "":
+                    print("Tuotetta ei ole valikoimassa")
 
 
         ostaja = input("Kuka ostaa? ")
+        haettusaldo = 0.0
+        ostajaLoytyi = False
+
         cur.execute(
-        "SELECT tunniste, nimi, saldo FROM tuote WHERE nimi=?", 
+        "SELECT tunniste, nimi, saldo FROM pankki WHERE nimi=?", 
         (ostaja,))
+
 
         for (tunniste, nimi, saldo) in cur:
             if nimi == ostaja:
-                ostaja.veloita(loppusumma)
+
+                ostajaLoytyi = True
+                haettusaldo = saldo
+
                 kuitit.append(kuitti(nimi, loppusumma))
 
                 for ostos in ostetutTuotteet:
                     kuitit[-1].lisaaOstos(ostos)
 
                 kuitit[-1].tulostaKuitti()
+
+        if ostajaLoytyi == True:
+
+            cur.execute(  
+            "UPDATE pankki SET saldo=? WHERE nimi=?",
+            (float(haettusaldo) - loppusumma, ostaja))
+            conn.commit()
+
 
         ostetutTuotteet.clear()
         loppusumma = 0
@@ -109,8 +107,10 @@ while toiminto != 2:
 
     elif toiminto == 5:
         print("Korttien tiedot")
-        for tieto in maksukortit:
-            tieto.tulostaSaldo()
+        cur.execute("select * from pankki")
+
+        for (tunniste, nimi, saldo) in cur:
+            print(str(tunniste)+ " " +nimi+ " " +str(saldo)+ "€")
 
         print("\n\nKuitit\n-----------------------------------------\n")
         for kuitti in kuitit:
