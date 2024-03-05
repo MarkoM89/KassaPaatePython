@@ -5,9 +5,10 @@ from kuitti import *
 import mariadb
 import sys
 
+from datetime import datetime
+
 toiminto = int(1)
 maksukortit = []
-tuotteet = []
 kuitit = []
 ostetutTuotteet = []
 
@@ -47,7 +48,9 @@ while toiminto != 2:
         
         while syottoTuoteNimi != "":
             for tuote in ostetutTuotteet:
-                print(tuote)
+                tuote.tulostaTuote()
+
+            print("Yhtensä: "+str(loppusumma)+ "€")
 
             tuoteLoydetty = False
             
@@ -60,9 +63,8 @@ while toiminto != 2:
             for (tuotetunniste, tuoteNimi, yksikköhinta) in cur:
                 if tuoteNimi == syottoTuoteNimi:
                     tuoteMaara = int(input("Paljonko laitetaan: "))
-                    ostetutTuotteet.append(tuoteNimi+ " " +str(tuoteMaara)+ "kpl")
+                    ostetutTuotteet.append(Tuote(tuotetunniste, tuoteNimi, yksikköhinta, tuoteMaara))
                     loppusumma += (float(yksikköhinta)*tuoteMaara)
-                    print(loppusumma)
                     tuoteLoydetty = True
 
             if tuoteLoydetty == False and syottoTuoteNimi != "":
@@ -84,19 +86,36 @@ while toiminto != 2:
                 ostajaLoytyi = True
                 haettusaldo = saldo
 
-                kuitit.append(kuitti(nimi, loppusumma))
-
-                for ostos in ostetutTuotteet:
-                    kuitit[-1].lisaaOstos(ostos)
-
-                kuitit[-1].tulostaKuitti()
-
+                
         if ostajaLoytyi == True:
 
             cur.execute(  
             "UPDATE pankki SET saldo=? WHERE nimi=?",
             (float(haettusaldo) - loppusumma, ostaja))
+
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            cur.execute(  
+                "INSERT INTO kuitti (osto_aika, kokonaishinta) VALUES (?, ?)",
+                (timestamp, loppusumma))
+            
+            cur.execute("SELECT kuittitunnus FROM kuitti ORDER BY kuittitunnus DESC LIMIT 1")
+            kuittitunnus = cur.fetchone()
+            
+            for ostos in ostetutTuotteet:
+                cur.execute(  
+                "INSERT INTO ostettu_tuote (kuittitunnus, tuotetunnus, tuotemäärä) values (?, ?, ?)",
+                (kuittitunnus[0], ostos.haeTuotetunniste(), ostos.haeOstomaara()))
+
             conn.commit()
+
+
+            print("\n\nKuitti\n")
+
+            for tuote in ostetutTuotteet:
+                tuote.tulostaTuote()
+
+            print("\nLoppusumma: " +str(loppusumma)+ "€")
 
 
         ostetutTuotteet.clear()
@@ -113,8 +132,12 @@ while toiminto != 2:
             print(str(tunniste)+ " " +nimi+ " " +str(saldo)+ "€")
 
         print("\n\nKuitit\n-----------------------------------------\n")
-        for kuitti in kuitit:
-            kuitti.tulostaKuitti()
+
+        cur.execute("select * from kuitti")
+
+        for (kuittitunnus, osto_aika, kokonaishinta) in cur:
+            print(str(kuittitunnus)+ " " +str(osto_aika)+ " " +str(kokonaishinta)+ "€")
+
 
     else:
         print("Valikko toimii luvuilla 1-2")
