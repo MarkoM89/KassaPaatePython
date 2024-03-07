@@ -93,11 +93,9 @@ while toiminto != 2:
             "UPDATE pankki SET saldo=? WHERE nimi=?",
             (float(haettusaldo) - loppusumma, ostaja))
 
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
             cur.execute(  
-                "INSERT INTO kuitti (osto_aika, kokonaishinta) VALUES (?, ?)",
-                (timestamp, loppusumma))
+                "INSERT INTO kuitti (kokonaishinta) VALUES (?)",
+                (loppusumma,))
             
             cur.execute("SELECT kuittitunnus FROM kuitti ORDER BY kuittitunnus DESC LIMIT 1")
             kuittitunnus = cur.fetchone()
