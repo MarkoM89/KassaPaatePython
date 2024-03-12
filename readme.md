@@ -11,7 +11,7 @@ Tuotteet, kuitit sekä maksukortit ovat MariaDb-tietokannassa.
 
 ## 2. Rajoitukset
 
-Ohjelma on rajoitettu tuotteiden käsittelyyn j ostamiseen vaikka kaupalla voisi myös esimerkiksi olla kaupan henkilöstön hallinta.
+Ohjelma on rajoitettu tuotteiden käsittelyyn ja ostamiseen vaikka kaupalla voisi myös esimerkiksi olla kaupan henkilöstön hallinta.
 
 Tuotteet syötetään käsin verrattuna, että kassapäätteessä olisi viivakoodinlukija.
 
