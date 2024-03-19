@@ -1,6 +1,5 @@
-from MaksuKortti import *
+
 from Tuote import *
-from kuitti import *
 
 import mariadb
 import sys
