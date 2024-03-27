@@ -70,49 +70,65 @@ while toiminto != 2:
                     print("Tuotetta ei ole valikoimassa")
 
 
-        ostaja = input("Kuka ostaa? ")
-        haettusaldo = 0.0
-        ostajaLoytyi = False
+        maksettavana = loppusumma
 
-        cur.execute(
-        "SELECT tunniste, nimi, saldo FROM pankki WHERE nimi=?", 
-        (ostaja,))
+        while maksettavana > 0:
+
+            print("Maksettavana " +str(maksettavana)+ "€")
+            maksutapa = int(input("Valitse maksutapa, \n1. Kortilla maksu\n2. käteisellä maksu\n"))
+
+            if maksutapa == 1:
+
+                ostaja = input("Kuka ostaa? ")
+                haettusaldo = 0.0
+                ostajaLoytyi = False
+
+                cur.execute(
+                "SELECT tunniste, nimi, saldo FROM pankki WHERE nimi=?", 
+                (ostaja,))
 
 
-        for (tunniste, nimi, saldo) in cur:
-            if nimi == ostaja:
+                for (tunniste, nimi, saldo) in cur:
+                    if nimi == ostaja:
 
-                ostajaLoytyi = True
-                haettusaldo = saldo
+                        ostajaLoytyi = True
+                        haettusaldo = saldo
 
                 
-        if ostajaLoytyi == True:
+                if ostajaLoytyi == True:
 
-            cur.execute(  
-            "UPDATE pankki SET saldo=? WHERE nimi=?",
-            (float(haettusaldo) - loppusumma, ostaja))
+                    cur.execute(  
+                    "UPDATE pankki SET saldo=? WHERE nimi=?",
+                    ((float(haettusaldo) - maksettavana), ostaja))
+                    maksettavana = 0
 
-            cur.execute(  
-                "INSERT INTO kuitti (kokonaishinta) VALUES (?)",
-                (loppusumma,))
+            if maksutapa == 2:
+
+                kateinen = float(input("Käteinen: "))
+                maksettavana -= kateinen
             
-            cur.execute("SELECT kuittitunnus FROM kuitti ORDER BY kuittitunnus DESC LIMIT 1")
-            kuittitunnus = cur.fetchone()
+
+        cur.execute(  
+            "INSERT INTO kuitti (kokonaishinta) VALUES (?)",
+            (loppusumma,))
             
-            for ostos in ostetutTuotteet:
-                cur.execute(  
-                "INSERT INTO ostettu_tuote (kuittitunnus, tuotetunnus, tuotemäärä) values (?, ?, ?)",
-                (kuittitunnus[0], ostos.haeTuotetunniste(), ostos.haeOstomaara()))
+        cur.execute("SELECT kuittitunnus FROM kuitti ORDER BY kuittitunnus DESC LIMIT 1")
+        kuittitunnus = cur.fetchone()
+            
+        for ostos in ostetutTuotteet:
+             cur.execute(  
+             "INSERT INTO ostettu_tuote (kuittitunnus, tuotetunnus, tuotemäärä) values (?, ?, ?)",
+             (kuittitunnus[0], ostos.haeTuotetunniste(), ostos.haeOstomaara()))
 
-            conn.commit()
+        conn.commit()
 
 
-            print("\n\nKuitti\n")
+        print("\n\nKuitti\n")
 
-            for tuote in ostetutTuotteet:
-                tuote.tulostaTuote()
+        for tuote in ostetutTuotteet:
+            tuote.tulostaTuote()
 
-            print("\nLoppusumma: " +str(loppusumma)+ "€")
+        print("\nLoppusumma: " +str(loppusumma)+ "€")
 
 
         ostetutTuotteet.clear()
