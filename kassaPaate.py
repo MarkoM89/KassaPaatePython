@@ -15,11 +15,11 @@ ostetutTuotteet = []
 
 try:
     conn = mariadb.connect(
-        user="root",
-        password="T13t0k4!?t4",
-        host="127.0.0.1",
-        port=3306,
-        database="kokeilutietokanta"
+        user="tietokannan kayttaja",
+        password="tietokannan salasana",
+        host="ip-osoite tietokannalle",
+        port="tietokannan portti",
+        database="tietokannan nimi"
 
     )
 except mariadb.Error as e:
