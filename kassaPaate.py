@@ -15,11 +15,11 @@ ostetutTuotteet = []
 
 try:
     conn = mariadb.connect(
-        user="tietokannan kayttaja",
-        password="tietokannan salasana",
-        host="ip-osoite tietokannalle",
-        port="tietokannan portti",
-        database="tietokannan nimi"
+        user="root",
+        password="T13t0k4!?t4",
+        host="127.0.0.1",
+        port=3306,
+        database="pankki_kauppa"
 
     )
 except mariadb.Error as e:
@@ -31,12 +31,15 @@ cur = conn.cursor()
 '''
 Päätoiminto 1: Osta tuote 
 
-Päätoiminto 2: Poistu ohjelmasta
+Päätoiminto 2: Muokkaa ostotapahtumaa 
+
+Päätoiminto 3: Poistu ohjelmasta
 '''
 
-while toiminto != 2:
+while toiminto != 3:
     toiminto = int(input("\nPäätoiminto 1: Ostotapahtuma\n"
-        			+ "Päätoiminto 2: Poistu ohjelmasta\n"))
+                    + "Päätoiminto 2: Muokkaa ostotapahtumaa\n"
+        			+ "Päätoiminto 3: Poistu ohjelmasta\n"))
 
     if toiminto == 1:
         print("Päätoiminto 1: Ostotapahtuma")
@@ -133,24 +136,19 @@ while toiminto != 2:
 
         ostetutTuotteet.clear()
         loppusumma = 0
+
+
+        
         
     elif toiminto == 2:
+        print("Ostotapahtuman muokkaus")
+
+
+
+    elif toiminto == 3:
         print("Ohjelma sulkeutuu")
-
-    elif toiminto == 5:
-        print("Korttien tiedot")
-        cur.execute("select * from pankki")
-
-        for (tunniste, nimi, saldo) in cur:
-            print(str(tunniste)+ " " +nimi+ " " +str(saldo)+ "€")
-
-        print("\n\nKuitit\n-----------------------------------------\n")
-
-        cur.execute("select * from kuitti")
-
-        for (kuittitunnus, osto_aika, kokonaishinta) in cur:
-            print(str(kuittitunnus)+ " " +str(osto_aika)+ " " +str(kokonaishinta)+ "€")
+    
 
 
     else:
-        print("Valikko toimii luvuilla 1-2")
+        print("Valikko toimii luvuilla 1-3")
