@@ -15,11 +15,11 @@ ostetutTuotteet = []
 
 try:
     conn = mariadb.connect(
-        user="root",
-        password="T13t0k4!?t4",
-        host="127.0.0.1",
-        port=3306,
-        database="pankki_kauppa"
+        user="tietokannan kayttaja",
+        password="tietokannan salasana",
+        host="ip-osoite tietokannalle",
+        port="tietokannan portti",
+        database="tietokannan nimi"
 
     )
 except mariadb.Error as e:
@@ -138,7 +138,7 @@ while toiminto != 3:
         loppusumma = 0
 
 
-        
+
         
     elif toiminto == 2:
         print("Ostotapahtuman muokkaus")
