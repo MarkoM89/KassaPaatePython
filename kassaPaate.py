@@ -4,7 +4,6 @@ from Tuote import *
 import mariadb
 import sys
 
-from datetime import datetime
 
 toiminto = int(1)
 maksukortit = []
@@ -32,6 +31,9 @@ cur = conn.cursor()
 Päätoiminto 1: Osta tuote 
 
 Päätoiminto 2: Poistu ohjelmasta
+
+Puuttuu takaisinmaksu käteisestä
+
 '''
 
 while toiminto != 2:
@@ -41,32 +43,33 @@ while toiminto != 2:
     if toiminto == 1:
         print("Päätoiminto 1: Ostotapahtuma")
 
-        syottoTuoteNimi = " "
+        syottoTuoteNimi = int(-1)
         loppusumma = 0.0
         
         
-        while syottoTuoteNimi != "":
+        while syottoTuoteNimi != 0:
             for tuote in ostetutTuotteet:
                 tuote.tulostaTuote()
 
-            print("Yhtensä: "+str(loppusumma)+ "€")
+            print("Yhteensä: "+str(loppusumma)+ "€")
 
             tuoteLoydetty = False
             
-            syottoTuoteNimi = input("Mitä tuotetta ostetaan? ")
+            syottoTuoteNimi = int(input("Mitä tuotetta ostetaan? "))
             cur.execute(
-            "SELECT tuotetunniste, tuotenimi, yksikköhinta FROM tuote WHERE tuotenimi=?", 
+            "SELECT tuotetunniste, tuotenimi, yksikköhinta FROM tuote WHERE tuotetunniste=?", 
             (syottoTuoteNimi,))
 
 
             for (tuotetunniste, tuoteNimi, yksikköhinta) in cur:
-                if tuoteNimi == syottoTuoteNimi:
+                print(str(tuoteNimi)+" "+ str(yksikköhinta))
+                if tuotetunniste == syottoTuoteNimi:
                     tuoteMaara = int(input("Paljonko laitetaan: "))
                     ostetutTuotteet.append(Tuote(tuotetunniste, tuoteNimi, yksikköhinta, tuoteMaara))
                     loppusumma += (float(yksikköhinta)*tuoteMaara)
                     tuoteLoydetty = True
 
-            if tuoteLoydetty == False and syottoTuoteNimi != "":
+            if tuoteLoydetty == False and syottoTuoteNimi != 0:
                     print("Tuotetta ei ole valikoimassa")
 
 
