@@ -23,15 +23,10 @@ Pankki tietokanta lähinnä esittää pankin tietokantaa, johon otettaisiin yhey
 
 ## 3. Ohjelman käyttöönotto
 
-### 3.1 Tietokannan asennus
+### 3.1 Tietokanta
 
-Ohjelma käyttää MariaDB-tietokantajärjestelmää, pääohjelmassa syötetään alussa tietokannan yhteystiedot, jotka ovat käyttänimi, salasana, verkkokone / ip-osoite, portti sekä tietokannan nimi:
+Ohjelma käyttää MariaDB-tietokantajärjestelmää
 
-        user="????",
-        password="?????",
-        host="???.?.?.?",
-        port=????,
-        database="????"
 
 ### 3.2 Taulukkojen luonti ja esiluotujen tietojen syöttö
 
@@ -75,3 +70,14 @@ tuotemäärä INT NOT NULL,
 FOREIGN KEY (kuittitunnus) REFERENCES kuitti(kuittitunnus),
 FOREIGN KEY (tuotetunnus) REFERENCES tuote(tuotetunniste)
 );
+
+
+### 3.3 Tietokannan käyttö ohjelmassa
+
+Pääohjelmassa syötetään alussa tietokannan yhteystiedot, jotka ovat käyttänimi, salasana, verkkokone / ip-osoite, portti sekä tietokannan nimi:
+
+        user="????",
+        password="?????",
+        host="???.?.?.?",
+        port=????,
+        database="????"
